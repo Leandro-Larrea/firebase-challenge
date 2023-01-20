@@ -1,17 +1,21 @@
-import { initializeApp } from 'firebase/app';
+import firebase from "firebase/app";
+import "firebase/firestore";
 
 
 
-var firebaseConfig = {
-  apiKey: "AIzaSyB1GqsNN5LB1AxtOJfHoABAyqtBidP9ABM",
-  authDomain: "fireform-61c3d.firebaseapp.com",
+const firebaseConfig = {
+  apiKey: process.env.REACT_APP_API_KEY,
+  authDomain: process.env.REACT_APP_AUTH_DOMAIN,
   projectId: "fireform-61c3d",
-  storageBucket: "fireform-61c3d.appspot.com",
-  messagingSenderId: "57650967733",
-  appId: "1:57650967733:web:e1c4da07de2f3c537c3afc"
+  storageBucket: process.env.REACT_APP_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_APP_ID
 };
 
-export const db = initializeApp(firebaseConfig);
+const app = firebase.initializeApp(firebaseConfig);
+const db = app.firestore();
+
+export {app, db}
 
 
 
