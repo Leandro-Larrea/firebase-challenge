@@ -12,6 +12,7 @@ export const Form = ()=>{
     let initialState ={};
     const [data, setData] = useState({})
     const [loader, setLoader] = useState(false)
+    const [alert, setAlert] = useState(false)
     
     useEffect(()=>{
         formItems.items.forEach(e =>{
@@ -20,9 +21,10 @@ export const Form = ()=>{
         })
         setData(initialState)
         return ()=> setData({})
-    },[])
+    },[alert])
 
     const handleInput = async (e)=>{
+        if(alert)return 
         if(e.target.name === "terms_and_conditions"){
             setData({...data, [e.target.name]: data[e.target.name] === true? false: true})
             return
@@ -36,23 +38,24 @@ export const Form = ()=>{
         setLoader(true)
         const fireConnection = getFirestore(db);
     try {
-        const docRef = await addDoc(collection(fireConnection, "form"), data);
+        let docRef = await addDoc(collection(fireConnection, "form"), data);
         console.log("Document written with ID: ", docRef.id);
         setLoader(false)
-        history.push(`/Results/${docRef.id}`)
+        setAlert(docRef.id)
+
       } catch (error) {
             console.error("Error adding document: ", error);
             alert("something it's wrong, not sure what though")
             setLoader(false)
       }
     }  
-
+    
     if(Object.keys(data).length){
     return(
-        <div className={style.container}> 
+        <div className={style.container}>
             <form className={style.form} onSubmit={handleSubmit}>
                 {formItems.items.map((e,i)=>
-                     e.type === "submit"?<button className={!loader?style.button:style.buttonLoading} key={e.label}>{!loader && e.label}</button>:
+                     e.type === "submit"?<button className={alert?style.buttonOff:!loader?style.button:style.buttonLoading} key={e.label}>{!loader && e.label}</button>:
                         <div className={style.item}  key={i}> 
                             <label className={style.label} htmlFor={e.name}>
                                 {e.label}
@@ -68,6 +71,11 @@ export const Form = ()=>{
                                             <input onChange={handleInput} name={e.name} value={data[e.name]} required={e.required} className={style.input} id={e.name} type={e.type}></input>}
                         </div>
                     )}
+                    {alert &&
+                    <div className={style.alertContainer}>
+                        <p style={{color:"white"}}>form completed</p>
+                        <button className={style.buttonAlert} onClick={()=> history.push(`/Results/${alert}`)}>check your data</button>
+                    </div>}
             </form>
         </div>
     )}
