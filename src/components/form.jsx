@@ -34,15 +34,6 @@ export const Form = ()=>{
     const handleSubmit = async (e)=>{
         e.preventDefault()
         setLoader(true)
-        //  db.collection("form").add(data)
-        // .then(function(docRef) {
-        //     console.log("Document written with ID: ", docRef.id);
-        //     setLoader(false)
-        //      history.push(`/Results/${docRef.id}`)
-        // })
-        // .catch(function(error) {
-             
-        // });
         const fireConnection = getFirestore(db);
     try {
         const docRef = await addDoc(collection(fireConnection, "form"), data);
