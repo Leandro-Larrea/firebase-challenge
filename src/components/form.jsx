@@ -3,7 +3,8 @@ import { useEffect } from "react";
 import { useState } from "react"
 import { formItems } from "../jsonsito"
 import style from "./styles/form.module.css"
-import { db, app } from "../firebase";
+import { db, } from "../firebase";
+import { collection, addDoc, getFirestore } from 'firebase/firestore'
 import { useHistory, useLocation } from "react-router-dom";
 
 export const Form = ()=>{
@@ -30,20 +31,29 @@ export const Form = ()=>{
   
     }
 
-    const handleSubmit = (e)=>{
+    const handleSubmit = async (e)=>{
         e.preventDefault()
         setLoader(true)
-         db.collection("form").add(data)
-        .then(function(docRef) {
-            console.log("Document written with ID: ", docRef.id);
-            setLoader(false)
-             history.push(`/Results/${docRef.id}`)
-        })
-        .catch(function(error) {
+        //  db.collection("form").add(data)
+        // .then(function(docRef) {
+        //     console.log("Document written with ID: ", docRef.id);
+        //     setLoader(false)
+        //      history.push(`/Results/${docRef.id}`)
+        // })
+        // .catch(function(error) {
+             
+        // });
+        const fireConnection = getFirestore(db);
+    try {
+        const docRef = await addDoc(collection(fireConnection, "form"), data);
+        console.log("Document written with ID: ", docRef.id);
+        setLoader(false)
+        history.push(`/Results/${docRef.id}`)
+      } catch (error) {
             console.error("Error adding document: ", error);
             alert("something it's wrong, not sure what though")
             setLoader(false)
-        });
+      }
     }  
 
     if(Object.keys(data).length){

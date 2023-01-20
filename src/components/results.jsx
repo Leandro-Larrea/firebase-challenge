@@ -2,26 +2,25 @@ import { useState,useEffect } from "react";
 import { useParams } from "react-router-dom"
 import style from "./styles/results.module.css"
 import loader from "./styles/loader2.gif"
-
+import { getDoc, doc, getFirestore, collection } from "firebase/firestore";
 import { db } from "../firebase";
 
 export const Results=()=>{
-
-    const [results, setResults] = useState({})
-
+    
     const {id} = useParams()
+    const [results, setResults] = useState({})
+    const services = getFirestore();
+    const colRef = collection(services,"form")
+    const docRef = doc(services, "form", id)
 
     useEffect(()=>{
         (async function(){
-            console.log(id)
-            const formCollection = db.collection("form")
-             const a = await formCollection.doc(id).get()
-             setResults(a.data())
+           let a = await getDoc(docRef)
+           setResults(a.data())
         }())
     },[])
 
     if(Object.keys(results).length){
-        console.log(Object.keys(results))
     return(
         <main className={style.main}>
             <div className={style.container}>
